@@ -10,6 +10,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public AuthResponse register(RegisterRequest request) {
+    public Mono<AuthResponse> register(RegisterRequest request) {
         User user = User.builder()
             .userId(UUID.randomUUID())
             .firstname(request.getFirstname())
@@ -31,31 +32,21 @@ public class AuthService {
             .role(Role.USER)
             .build();
 
-        String jwtToken = jwtService.generateToken(user);
-        userService.insertUser(user);
-
-        return AuthResponse.builder()
-            .userId(user.getUserId())
-            .accessToken(jwtToken)
-            .build();
+        return userService.insertUser(user)
+            .map(u -> AuthResponse.builder()
+                .userId(u.getUserId())
+                .firstname(u.getFirstname())
+                .lastname(u.getLastname())
+                .accessToken(jwtService.generateToken(u)).build());
     }
 
-    public AuthResponse login(AuthRequest request) {
-        /*authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                request.getEmail(),
-                request.getPassword()
-            )
-        );*/
+    public Mono<AuthResponse> login(AuthRequest request) {
         AuthResponse response = new AuthResponse();
-        userService.findByEmail(request.getEmail())
-            .subscribe(user -> {
-                if (user != null) {
-                    String jwtToken = jwtService.generateToken(user);
-                    response.setAccessToken(jwtToken);
-                    response.setUserId(user.getUserId());
-                }
+        return userService.findByEmail(request.getEmail(), request.getPassword())
+            .map(user -> {
+                response.setUserId(user.getUserId());
+                response.setAccessToken(jwtService.generateToken(user));
+                return response;
             });
-        return response;
     }
 }

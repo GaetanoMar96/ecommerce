@@ -6,17 +6,22 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.function.Function;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JwtService {
 
-    private String secretKey = "mykey";
-    private long jwtExpiration = 12L;
+    @Value("${springwebflux.jjwt.secret}")
+    private String secretKey;
+
+    @Value("${springwebflux.jjwt.expiration}")
+    private Long expirationTime;
 
     public String generateToken(UserDetails userDetails) {
         return Jwts
@@ -24,7 +29,7 @@ public class JwtService {
             .setClaims(new HashMap<>())
             .setSubject(userDetails.getUsername()) //Email
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+            .setExpiration(Date.from(Instant.now().plusSeconds(expirationTime)))
             .signWith(getSignInKey(), SignatureAlgorithm.HS256)
             .compact();
     }

@@ -20,12 +20,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public Mono<ResponseEntity<AuthResponse>> register(@RequestBody RegisterRequest request) {
-        return Mono.just(ResponseEntity.ok(authService.register(request)));
+    public ResponseEntity<Mono<AuthResponse>> register(@RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<AuthResponse>> login(@RequestBody AuthRequest request) {
-        return Mono.just(ResponseEntity.ok(authService.login(request)));
+    public ResponseEntity<Mono<AuthResponse>> login(@RequestBody AuthRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 }
