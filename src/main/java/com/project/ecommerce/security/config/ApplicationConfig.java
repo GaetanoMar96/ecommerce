@@ -16,11 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    /**
-     * Data access provider to look up to the user,
-     * validating username and password
-     * @return provider
-     */
     @Bean
     public ReactiveAuthenticationManager reactiveAuthenticationManager(ReactiveUserDetailsService userDetailsService) {
         var authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService);

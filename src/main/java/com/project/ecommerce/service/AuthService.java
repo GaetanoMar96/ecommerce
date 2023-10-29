@@ -23,7 +23,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public Mono<AuthResponse> register(RegisterRequest request) {
-        User user = User.builder()
+        User newUser = User.builder()
             .userId(UUID.randomUUID())
             .firstname(request.getFirstname())
             .lastname(request.getLastname())
@@ -32,21 +32,22 @@ public class AuthService {
             .role(Role.USER)
             .build();
 
-        return userService.insertUser(user)
-            .map(u -> AuthResponse.builder()
-                .userId(u.getUserId())
-                .firstname(u.getFirstname())
-                .lastname(u.getLastname())
-                .accessToken(jwtService.generateToken(u)).build());
+        return userService.insertUser(newUser)
+            .map(user ->
+                     AuthResponse.builder()
+                         .userId(user.getUserId())
+                         .firstname(user.getFirstname())
+                         .lastname(user.getLastname())
+                         .accessToken(jwtService.generateToken(user)).build()
+            );
     }
 
     public Mono<AuthResponse> login(AuthRequest request) {
-        AuthResponse response = new AuthResponse();
         return userService.findByEmail(request.getEmail(), request.getPassword())
-            .map(user -> {
-                response.setUserId(user.getUserId());
-                response.setAccessToken(jwtService.generateToken(user));
-                return response;
-            });
+            .map(user ->
+                     AuthResponse.builder()
+                         .userId(user.getUserId())
+                         .accessToken(jwtService.generateToken(user)).build()
+            );
     }
 }
