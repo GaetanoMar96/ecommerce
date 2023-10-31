@@ -13,8 +13,9 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 @Configuration
@@ -29,9 +30,9 @@ public class SecurityConfig {
         ReactiveAuthenticationManager reactiveAuthenticationManager) {
 
         return http
-            .csrf(ServerHttpSecurity.CsrfSpec::disable)
+            .csrf(csrfSpec -> csrfSpec.csrfTokenRepository(new CookieServerCsrfTokenRepository()))
             .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
-            .cors(ServerHttpSecurity.CorsSpec::disable)
+            .cors(corsSpec -> corsSpec.configurationSource(corsConfiguration()))
             .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
             .authenticationManager(reactiveAuthenticationManager)
             .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
@@ -44,13 +45,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    CorsWebFilter corsWebFilter() {
+    CorsConfigurationSource corsConfiguration() {
         var corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(Collections.singletonList("*"));
         corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
         corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
-        return new CorsWebFilter(source);
+        return source;
     }
 }

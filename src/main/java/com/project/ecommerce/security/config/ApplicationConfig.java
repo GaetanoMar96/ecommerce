@@ -23,9 +23,14 @@ public class ApplicationConfig {
         return authenticationManager;
     }
 
+    /**
+     * Custom implementaion of UserDetailsService
+     * @param userRepository user repository
+     * @return ReactiveUserDetailsService
+     */
     @Bean
-    public ReactiveUserDetailsService userDetailsService(UserRepository users){
-        return username-> users.findByEmail(username)
+    public ReactiveUserDetailsService userDetailsService(UserRepository userRepository){
+        return username-> userRepository.findByEmail(username)
             .map(u -> User
                 .withUsername(u.getUsername()).password(u.getPassword())
                 .authorities(u.getAuthorities().toArray(new GrantedAuthority[0]))

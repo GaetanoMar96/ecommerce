@@ -25,7 +25,7 @@ public class ProductsController {
         return ResponseEntity.ok(productsService.findProductsByGenderAndCategory(gender, ""));
     }
 
-    @GetMapping("/{gender}/category{category}")
+    @GetMapping("/{gender}/category/{category}")
     public ResponseEntity<Flux<Product>> getProductsByGenderAndCategory(@PathVariable String gender, @PathVariable String category) {
         return ResponseEntity.ok(productsService.findProductsByGenderAndCategory(gender, category));
     }

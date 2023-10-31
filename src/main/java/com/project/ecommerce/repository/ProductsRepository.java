@@ -24,7 +24,9 @@ public class ProductsRepository  {
     public Query getQueryByGenderAndCategory(String gender, String category) {
         Query query = new Query();
         if (StringUtils.hasText(gender)) {
-            query.addCriteria(Criteria.where("gender").is(gender));
+            //search by men or women fields
+            Criteria regexCriteria = Criteria.where("category").regex("^.*" + gender + ".*$", "i");
+            query.addCriteria(regexCriteria);
         }
         if (StringUtils.hasText(category)) {
             query.addCriteria(Criteria.where("category").is(category));
