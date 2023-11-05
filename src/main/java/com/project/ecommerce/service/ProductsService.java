@@ -16,8 +16,12 @@ public class ProductsService {
 
     private final ProductsRepository productsRepository;
 
-    public Flux<Product> findProductsByGenderAndCategory(String gender, String category) {
-        return productsRepository.findProductsByGenderAndCategory(gender, category);
+    public Flux<Product> findProductsByGender(String gender) {
+        return productsRepository.findProductsByGender(gender);
+    }
+
+    public Flux<Product> findProductsBySearchQuery(String query) {
+        return productsRepository.findProductsBySearchQuery(query);
     }
 
     public Flux<Product> findProductsByFilters(ProductFilters productFilters) {

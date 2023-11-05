@@ -16,35 +16,65 @@ public class ProductsRepository  {
 
     private final ReactiveMongoTemplate mongoTemplate;
 
-    public Flux<Product> findProductsByGenderAndCategory(String gender, String category) {
-        Query query = getQueryByGenderAndCategory(gender, category);
+    public Flux<Product> findProductsByGender(String gender) {
+        Query query = getQueryByGender(gender);
         return mongoTemplate.find(query, Product.class);
     }
 
-    public Query getQueryByGenderAndCategory(String gender, String category) {
+    public Flux<Product> findProductsBySearchQuery(String searchQuery) {
+        Query query = getQueryBySearchQuery(searchQuery);
+        return mongoTemplate.find(query, Product.class);
+    }
+
+    public Flux<Product> findProductsByDynamicFilter(ProductFilters productFilters) {
+        Query query = getQueryByDynamicFilter(productFilters);
+        Flux<Product> products = mongoTemplate.find(query, Product.class);
+        String color = productFilters.color();
+        if (!StringUtils.hasText(color)) {
+            return products;
+        }
+        //get only images by desired color
+        return products
+            .flatMap(product -> {
+                product.getImages().removeIf(image -> !color.equals(image.getColor()));
+                if (!product.getImages().isEmpty()) {
+                    return Flux.just(product);
+                }
+                return Flux.empty();
+            })
+            .filter(product -> !product.getImages().isEmpty());
+    }
+
+    public Query getQueryByGender(String gender) {
         Query query = new Query();
         if (StringUtils.hasText(gender)) {
-            //search by men or women fields
-            Criteria regexCriteria = Criteria.where("category").regex("^.*" + gender + ".*$", "i");
-            query.addCriteria(regexCriteria);
-        }
-        if (StringUtils.hasText(category)) {
-            query.addCriteria(Criteria.where("category").is(category));
+            query.addCriteria(Criteria.where("gender").is(gender));
         }
         return query;
     }
 
-    public Flux<Product> findProductsByDynamicFilter(ProductFilters productFilters) {
-        Query query = getQueryByGenderAndCategory(productFilters.gender(), productFilters.category());
+    public Query getQueryBySearchQuery(String searchQuery) {
+        Query query = new Query();
+        if (StringUtils.hasText(searchQuery)) {
+            Criteria regexBrandCriteria = Criteria.where("brand").regex("^.*" + query + ".*$", "i");
+            Criteria regexNameCriteria = Criteria.where("name").regex("^.*" + query + ".*$", "i");
+            query.addCriteria(regexNameCriteria);
+            query.addCriteria(regexBrandCriteria);
+        }
+        return query;
+    }
+
+    public Query getQueryByDynamicFilter(ProductFilters productFilters) {
+        Query query = getQueryByGender(productFilters.gender());
         if (productFilters.minPrice() != null) {
             query.addCriteria(Criteria.where("price").gte(productFilters.minPrice()));
         }
         if (productFilters.maxPrice() != null) {
             query.addCriteria(Criteria.where("price").lte(productFilters.maxPrice()));
         }
-        if (productFilters.color() != null) {
-            query.addCriteria(Criteria.where("color").is(productFilters.color()));
+        if (productFilters.brand() != null) {
+            query.addCriteria(Criteria.where("brand").is(productFilters.brand()));
         }
-        return mongoTemplate.find(query, Product.class);
+        return query;
     }
 }

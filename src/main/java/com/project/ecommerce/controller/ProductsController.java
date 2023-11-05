@@ -22,12 +22,12 @@ public class ProductsController {
 
     @GetMapping("/{gender}")
     public ResponseEntity<Flux<Product>> getProductsByGender(@PathVariable String gender) {
-        return ResponseEntity.ok(productsService.findProductsByGenderAndCategory(gender, ""));
+        return ResponseEntity.ok(productsService.findProductsByGender(gender));
     }
 
-    @GetMapping("/{gender}/category/{category}")
-    public ResponseEntity<Flux<Product>> getProductsByGenderAndCategory(@PathVariable String gender, @PathVariable String category) {
-        return ResponseEntity.ok(productsService.findProductsByGenderAndCategory(gender, category));
+    @GetMapping("/search/{query}")
+    public ResponseEntity<Flux<Product>> getProductsBySearchQuery(@PathVariable String query) {
+        return ResponseEntity.ok(productsService.findProductsBySearchQuery(query));
     }
 
     @PostMapping("/filters")

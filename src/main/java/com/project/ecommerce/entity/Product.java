@@ -1,11 +1,13 @@
 package com.project.ecommerce.entity;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.core.io.Resource;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -18,18 +20,18 @@ public class Product {
 
     @Id
     private String id;
-    private String title;
-    private double price;
+    private String name;
+    private String brand;
     private String description;
-    private String category;
-    private String image;
-    private Rating rating;
+    private double price;
+    private String gender;
+    private List<ImageData> images;
 
     @Getter
     @Setter
     @AllArgsConstructor
-    public static class Rating {
-        private double rate;
-        private int count;
+    public static class ImageData {
+        private Resource image;
+        private String color;
     }
 }
