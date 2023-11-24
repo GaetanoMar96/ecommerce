@@ -1,9 +1,9 @@
 package com.project.ecommerce.utils;
 
 import com.project.ecommerce.entity.Product;
-import java.util.Collections;
-import org.springframework.core.io.ByteArrayResource;
 import reactor.core.publisher.Flux;
+
+import java.util.Collections;
 
 public class TestUtils {
 
@@ -15,6 +15,7 @@ public class TestUtils {
             .description("Description 1")
             .price(100.0)
             .gender("Male")
+                .images(Collections.singletonList(new Product.ImageData("64582hdh7w", null, "blue")))
             .build();
 
         Product product2 = Product.builder()
@@ -24,6 +25,7 @@ public class TestUtils {
             .description("Description 2")
             .price(150.0)
             .gender("Female")
+                .images(Collections.singletonList(new Product.ImageData("64582hdh7w", null, "red")))
             .build();
 
         return Flux.just(product1, product2);

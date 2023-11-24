@@ -12,23 +12,23 @@ import reactor.core.publisher.Flux;
 
 @Repository
 @RequiredArgsConstructor
-public class ProductsRepository  {
+public class ProductsRepository implements CommonRepository {
 
     private final ReactiveMongoTemplate mongoTemplate;
 
     public Flux<Product> findProductsByGender(String gender) {
         Query query = getQueryByGender(gender);
-        return mongoTemplate.find(query, Product.class);
+        return postProcessProducts(mongoTemplate.find(query, Product.class));
     }
 
     public Flux<Product> findProductsBySearchQuery(String searchQuery) {
         Query query = getQueryBySearchQuery(searchQuery);
-        return mongoTemplate.find(query, Product.class);
+        return postProcessProducts(mongoTemplate.find(query, Product.class));
     }
 
     public Flux<Product> findProductsByDynamicFilter(ProductFilters productFilters) {
         Query query = getQueryByDynamicFilter(productFilters);
-        return mongoTemplate.find(query, Product.class);
+        return postProcessProducts(mongoTemplate.find(query, Product.class));
     }
 
     public Query getQueryByGender(String gender) {
@@ -42,8 +42,8 @@ public class ProductsRepository  {
     public Query getQueryBySearchQuery(String searchQuery) {
         Query query = new Query();
         if (StringUtils.hasText(searchQuery)) {
-            Criteria regexBrandCriteria = Criteria.where("brand").regex("^.*" + query + ".*$", "i");
-            Criteria regexNameCriteria = Criteria.where("name").regex("^.*" + query + ".*$", "i");
+            Criteria regexBrandCriteria = Criteria.where("brand").regex("^.*" + searchQuery + ".*$", "i");
+            Criteria regexNameCriteria = Criteria.where("name").regex("^.*" + searchQuery + ".*$", "i");
             query.addCriteria(regexNameCriteria);
             query.addCriteria(regexBrandCriteria);
         }
@@ -52,12 +52,14 @@ public class ProductsRepository  {
 
     public Query getQueryByDynamicFilter(ProductFilters productFilters) {
         Query query = getQueryByGender(productFilters.gender());
-        if (productFilters.minPrice() != null) {
+        if (productFilters.minPrice() != null && productFilters.maxPrice() != null) {
+            query.addCriteria(Criteria.where("price").gte(productFilters.minPrice()).lte(productFilters.maxPrice()));
+        } else if (productFilters.minPrice() != null) {
             query.addCriteria(Criteria.where("price").gte(productFilters.minPrice()));
-        }
-        if (productFilters.maxPrice() != null) {
+        } else if (productFilters.maxPrice() != null) {
             query.addCriteria(Criteria.where("price").lte(productFilters.maxPrice()));
         }
+
         if (productFilters.brand() != null) {
             query.addCriteria(Criteria.where("brand").is(productFilters.brand()));
         }

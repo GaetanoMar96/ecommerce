@@ -31,7 +31,8 @@ public class SecurityConfig {
         ReactiveAuthenticationManager reactiveAuthenticationManager) {
 
         return http
-            .csrf(csrfSpec -> csrfSpec.csrfTokenRepository(new CookieServerCsrfTokenRepository()))
+                .csrf(ServerHttpSecurity.CsrfSpec::disable) //temporaneo
+            //.csrf(csrfSpec -> csrfSpec.csrfTokenRepository(new CookieServerCsrfTokenRepository()))
             .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
             .cors(corsSpec -> corsSpec.configurationSource(corsConfiguration()))
             .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
@@ -40,7 +41,7 @@ public class SecurityConfig {
             .authorizeExchange(exchanges -> exchanges
                 .pathMatchers("/api/v1/ecommerce/auth/register").permitAll()
                 .pathMatchers("/api/v1/ecommerce/auth/login").permitAll()
-                .anyExchange().permitAll())
+                .anyExchange().permitAll()) //To be changed
             .addFilterAt(new JwtTokenAuthenticationFilter(tokenProvider, userDetailsService), SecurityWebFiltersOrder.AUTHENTICATION)
             .addFilterAt(logoutFilter(), SecurityWebFiltersOrder.LOGOUT)
             .build();

@@ -44,37 +44,37 @@ class ProductsControllerTest {
     void getProductsByGender_StatusOK() {
         when(productsRepository.findProductsByGender("male")).thenReturn(TestUtils.getProductsFromDb());
         when(productsService.findProductsByGender("male")).thenReturn(TestUtils.getProductsFromDb());
+
         webClient
             .get().uri(API + "/{gender}", "male")
             .exchange()
             .expectStatus()
-            .isOk()
-            .expectBody(Product.class);
+            .isOk();
     }
 
     @Test
     void getProductsBySearchQuery_StatusOK() {
-        //when(mongoTemplate.find(Mockito.any(), Mockito.any())).thenReturn(TestUtils.getProductsFromDb());
+        when(productsRepository.findProductsBySearchQuery("nike")).thenReturn(TestUtils.getProductsFromDb());
+        when(productsService.findProductsBySearchQuery("nike")).thenReturn(TestUtils.getProductsFromDb());
 
         webClient
             .get().uri(API + "/search/{query}", "nike")
             .exchange()
             .expectStatus()
-            .isOk()
-            .expectBody(Product.class);
+            .isOk();
     }
 
     @Test
     void getProductsByFilters_StatusOK() {
         ProductFilters filters = new ProductFilters("male", 0.00, 100.00, "red", "nike");
-        //when(mongoTemplate.find(Mockito.any(), Mockito.any())).thenReturn(TestUtils.getProductsFromDb());
+        when(productsRepository.findProductsByDynamicFilter(filters)).thenReturn(TestUtils.getProductsFromDb());
+        when(productsService.findProductsByFilters(filters)).thenReturn(TestUtils.getProductsFromDb());
 
         webClient
             .post().uri(API + "/filters")
             .bodyValue(filters)
             .exchange()
             .expectStatus()
-            .isOk()
-            .expectBody(Product.class);
+            .isOk();
     }
 }

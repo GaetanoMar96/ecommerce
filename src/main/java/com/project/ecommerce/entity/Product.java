@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.core.io.Resource;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -31,7 +30,8 @@ public class Product {
     @Setter
     @AllArgsConstructor
     public static class ImageData {
-        private Resource image;
+        private String image; //initial value
+        private byte[] imageBin; //post processed value
         private String color;
     }
 }

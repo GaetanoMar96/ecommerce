@@ -1,11 +1,8 @@
 package com.project.ecommerce.controller;
 
 
-import static org.hamcrest.Matchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.project.ecommerce.entity.User;
 import com.project.ecommerce.entity.User.Role;
 import com.project.ecommerce.model.AuthRequest;
 import com.project.ecommerce.model.AuthResponse;
