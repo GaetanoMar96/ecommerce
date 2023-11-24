@@ -28,21 +28,7 @@ public class ProductsRepository  {
 
     public Flux<Product> findProductsByDynamicFilter(ProductFilters productFilters) {
         Query query = getQueryByDynamicFilter(productFilters);
-        Flux<Product> products = mongoTemplate.find(query, Product.class);
-        String color = productFilters.color();
-        if (!StringUtils.hasText(color)) {
-            return products;
-        }
-        //get only images by desired color
-        return products
-            .flatMap(product -> {
-                product.getImages().removeIf(image -> !color.equals(image.getColor()));
-                if (!product.getImages().isEmpty()) {
-                    return Flux.just(product);
-                }
-                return Flux.empty();
-            })
-            .filter(product -> !product.getImages().isEmpty());
+        return mongoTemplate.find(query, Product.class);
     }
 
     public Query getQueryByGender(String gender) {

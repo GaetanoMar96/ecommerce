@@ -40,7 +40,7 @@ public class SecurityConfig {
             .authorizeExchange(exchanges -> exchanges
                 .pathMatchers("/api/v1/ecommerce/auth/register").permitAll()
                 .pathMatchers("/api/v1/ecommerce/auth/login").permitAll()
-                .anyExchange().authenticated())
+                .anyExchange().permitAll())
             .addFilterAt(new JwtTokenAuthenticationFilter(tokenProvider, userDetailsService), SecurityWebFiltersOrder.AUTHENTICATION)
             .addFilterAt(logoutFilter(), SecurityWebFiltersOrder.LOGOUT)
             .build();
