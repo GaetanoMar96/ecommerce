@@ -21,15 +21,17 @@ import reactor.core.scheduler.Schedulers;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenAuthenticationFilter implements WebFilter {
+
     private final JwtService jwtService;
 
     private final ReactiveUserDetailsService userDetailsService;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        if (exchange.getRequest().getURI().getPath().contains("/api/v1/ecommerce/auth/register")) {
+        if (exchange.getRequest().getURI().getPath().contains("/api/v1/ecommerce/auth")) {
             return chain.filter(exchange);
         }
+
         String token = resolveToken(exchange.getRequest());
         String userEmail = jwtService.extractUsername(token);
         if (StringUtils.hasText(token) && this.jwtService.isTokenValid(token, userEmail)) {

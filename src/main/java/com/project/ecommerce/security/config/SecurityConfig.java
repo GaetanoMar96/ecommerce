@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.logout.LogoutWebFilter;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
-import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
@@ -41,7 +40,7 @@ public class SecurityConfig {
             .authorizeExchange(exchanges -> exchanges
                 .pathMatchers("/api/v1/ecommerce/auth/register").permitAll()
                 .pathMatchers("/api/v1/ecommerce/auth/login").permitAll()
-                .anyExchange().permitAll()) //To be changed
+                .anyExchange().authenticated())
             .addFilterAt(new JwtTokenAuthenticationFilter(tokenProvider, userDetailsService), SecurityWebFiltersOrder.AUTHENTICATION)
             .addFilterAt(logoutFilter(), SecurityWebFiltersOrder.LOGOUT)
             .build();

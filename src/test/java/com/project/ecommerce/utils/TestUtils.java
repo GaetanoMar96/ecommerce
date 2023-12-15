@@ -4,6 +4,7 @@ import com.project.ecommerce.entity.Product;
 import reactor.core.publisher.Flux;
 
 import java.util.Collections;
+import java.util.Map;
 
 public class TestUtils {
 
@@ -29,5 +30,13 @@ public class TestUtils {
             .build();
 
         return Flux.just(product1, product2);
+    }
+
+    public static Map<String, String> getPayload() {
+        return Map.of(
+                "paymentMethodId", "pm_visa_card",
+                "amount", "100",
+                "currency", "eur"
+        );
     }
 }

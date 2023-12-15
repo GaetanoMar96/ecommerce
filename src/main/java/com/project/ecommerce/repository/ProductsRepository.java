@@ -44,8 +44,7 @@ public class ProductsRepository implements CommonRepository {
         if (StringUtils.hasText(searchQuery)) {
             Criteria regexBrandCriteria = Criteria.where("brand").regex("^.*" + searchQuery + ".*$", "i");
             Criteria regexNameCriteria = Criteria.where("name").regex("^.*" + searchQuery + ".*$", "i");
-            query.addCriteria(regexNameCriteria);
-            query.addCriteria(regexBrandCriteria);
+            query.addCriteria(new Criteria().orOperator(regexBrandCriteria, regexNameCriteria));
         }
         return query;
     }
@@ -62,6 +61,9 @@ public class ProductsRepository implements CommonRepository {
 
         if (productFilters.brand() != null) {
             query.addCriteria(Criteria.where("brand").is(productFilters.brand()));
+        }
+        if (productFilters.colors() != null && !productFilters.colors().isEmpty()) {
+            query.addCriteria(Criteria.where("images.color").in(productFilters.colors()));
         }
         return query;
     }

@@ -5,7 +5,6 @@ import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Base64;
 
 public interface CommonRepository {
 
@@ -13,10 +12,11 @@ public interface CommonRepository {
         if (products == null) {
             return Flux.empty();
         }
-        Base64.Decoder decoder = Base64.getDecoder();
         return products.flatMap(product -> {
             if(!CollectionUtils.isEmpty(product.getImages())) {
-                product.getImages().forEach(image -> image.setImageBin(decoder.decode(image.getImage())));
+                //Temporary solution
+                product.getImages().forEach(image -> image.setImage(
+                        product.getBrand() + "-" + product.getName() + "-" + image.getColor() + ".png"));
             }
             return Mono.just(product);
         });

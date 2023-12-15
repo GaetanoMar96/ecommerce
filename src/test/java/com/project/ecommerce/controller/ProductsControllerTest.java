@@ -2,7 +2,6 @@ package com.project.ecommerce.controller;
 
 import static org.mockito.Mockito.when;
 
-import com.project.ecommerce.entity.Product;
 import com.project.ecommerce.model.ProductFilters;
 import com.project.ecommerce.repository.ProductsRepository;
 import com.project.ecommerce.security.JwtService;
@@ -19,9 +18,10 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.util.Collections;
+
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(controllers = ProductsController.class, excludeAutoConfiguration = ReactiveSecurityAutoConfiguration.class)
-//@ContextConfiguration(classes = { TestConfig.class })
 class ProductsControllerTest {
 
     private final String API = "/api/v1/ecommerce/products";
@@ -66,7 +66,7 @@ class ProductsControllerTest {
 
     @Test
     void getProductsByFilters_StatusOK() {
-        ProductFilters filters = new ProductFilters("male", 0.00, 100.00, "red", "nike");
+        ProductFilters filters = new ProductFilters("male", 0.00, 100.00, Collections.singleton("red"), "nike");
         when(productsRepository.findProductsByDynamicFilter(filters)).thenReturn(TestUtils.getProductsFromDb());
         when(productsService.findProductsByFilters(filters)).thenReturn(TestUtils.getProductsFromDb());
 
