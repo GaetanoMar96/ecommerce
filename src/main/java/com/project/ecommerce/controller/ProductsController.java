@@ -20,6 +20,11 @@ public class ProductsController {
 
     private final ProductsService productsService;
 
+    @GetMapping()
+    public ResponseEntity<Flux<Product>> getAllProducts() {
+        return ResponseEntity.ok(productsService.findAllProducts());
+    }
+
     @GetMapping("/{gender}")
     public ResponseEntity<Flux<Product>> getProductsByGender(@PathVariable String gender) {
         return ResponseEntity.ok(productsService.findProductsByGender(gender));

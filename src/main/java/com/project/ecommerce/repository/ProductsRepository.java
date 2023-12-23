@@ -16,6 +16,10 @@ public class ProductsRepository implements CommonRepository {
 
     private final ReactiveMongoTemplate mongoTemplate;
 
+    public Flux<Product> findAllProducts() {
+        return postProcessProducts(mongoTemplate.find(new Query(), Product.class));
+    }
+
     public Flux<Product> findProductsByGender(String gender) {
         Query query = getQueryByGender(gender);
         return postProcessProducts(mongoTemplate.find(query, Product.class));
@@ -59,7 +63,7 @@ public class ProductsRepository implements CommonRepository {
             query.addCriteria(Criteria.where("price").lte(productFilters.maxPrice()));
         }
 
-        if (productFilters.brand() != null) {
+        if (StringUtils.hasText(productFilters.brand())) {
             query.addCriteria(Criteria.where("brand").is(productFilters.brand()));
         }
         if (productFilters.colors() != null && !productFilters.colors().isEmpty()) {

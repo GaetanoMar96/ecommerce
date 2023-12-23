@@ -41,6 +41,18 @@ class ProductsControllerTest {
     JwtService jwtService;
 
     @Test
+    void getAllProducts_StatusOK() {
+        when(productsRepository.findAllProducts()).thenReturn(TestUtils.getProductsFromDb());
+        when(productsService.findAllProducts()).thenReturn(TestUtils.getProductsFromDb());
+
+        webClient
+                .get().uri(API)
+                .exchange()
+                .expectStatus()
+                .isOk();
+    }
+
+    @Test
     void getProductsByGender_StatusOK() {
         when(productsRepository.findProductsByGender("male")).thenReturn(TestUtils.getProductsFromDb());
         when(productsService.findProductsByGender("male")).thenReturn(TestUtils.getProductsFromDb());
@@ -76,5 +88,51 @@ class ProductsControllerTest {
             .exchange()
             .expectStatus()
             .isOk();
+    }
+
+    @Test
+    void getAllProducts_StatusKO() {
+        when(productsRepository.findAllProducts()).thenThrow(RuntimeException.class);
+
+        webClient
+                .get().uri(API)
+                .exchange()
+                .expectStatus()
+                .is5xxServerError();
+    }
+
+    @Test
+    void getProductsByGender_StatusKO() {
+        when(productsRepository.findProductsByGender("male")).thenThrow(RuntimeException.class);
+
+        webClient
+                .get().uri(API + "/{gender}", "male")
+                .exchange()
+                .expectStatus()
+                .is5xxServerError();
+    }
+
+    @Test
+    void getProductsBySearchQuery_StatusKO() {
+        when(productsRepository.findProductsBySearchQuery("nike")).thenThrow(RuntimeException.class);
+
+        webClient
+                .get().uri(API + "/search/{query}", "nike")
+                .exchange()
+                .expectStatus()
+                .is5xxServerError();
+    }
+
+    @Test
+    void getProductsByFilters_StatusKO() {
+        ProductFilters filters = new ProductFilters("male", 0.00, 100.00, Collections.singleton("red"), "nike");
+        when(productsRepository.findProductsByDynamicFilter(filters)).thenThrow(RuntimeException.class);
+
+        webClient
+                .post().uri(API + "/filters")
+                .bodyValue(filters)
+                .exchange()
+                .expectStatus()
+                .is5xxServerError();
     }
 }
