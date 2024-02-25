@@ -34,7 +34,7 @@ This project is a backend application for an eCommerce platform built using Java
 2. Navigate to the project directory:
 
     ```bash
-    cd ecommerce-backend
+    cd ecommerce
     ```
 
 3. Build the project:
@@ -56,11 +56,11 @@ This project is a backend application for an eCommerce platform built using Java
 2. Build the Docker image:
 
     ```bash
-    docker build -t e-commerce.
+    docker build -t ecommerce.
     ```
 
 3. Run the Docker container:
 
     ```bash
-    docker run -p 8080:8080 e-commerce
+    docker run -p 8080:8080 ecommerce
     ```
